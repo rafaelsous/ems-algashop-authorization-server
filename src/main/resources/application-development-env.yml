@@ -16,6 +16,7 @@ spring:
                 - products:write
             token:
               access-token-time-to-live: 15m
+              access-token-format: reference # Opaque token
 
           algashop-ordering-service-client:
             registration:
@@ -27,3 +28,6 @@ spring:
               client-secret: "{noop}secret123"
               scopes:
                 - products:read
+            token:
+              access-token-time-to-live: 5m
+              access-token-format: self-container # JWT
