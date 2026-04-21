@@ -28,6 +28,7 @@ spring:
                 - customers:write
                 - shopping-carts:read
                 - shopping-carts:write
+                - shipping-costs:preview
             token:
               access-token-time-to-live: 15m
 
@@ -43,4 +44,4 @@ spring:
                 - products:read
             token:
               access-token-time-to-live: 5m
-              access-token-format: self-container # JWT
+              access-token-format: self-contained # JWT
