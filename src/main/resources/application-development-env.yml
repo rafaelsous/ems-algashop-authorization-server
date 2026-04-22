@@ -55,7 +55,7 @@ spring:
               client-secret: "{noop}ecommerce123"
               client-name: AlgaShop Ecommerce
               authorization-grant-types:
-                - authorization-code
+                - authorization_code
               client-authentication-methods:
                 - client_secret_basic
               redirect-uris:
@@ -89,3 +89,7 @@ spring:
                 - customers:write
             token:
               access-token-time-to-live: 15m
+
+#logging:
+#  level:
+#    org.springframework.security: TRACE
