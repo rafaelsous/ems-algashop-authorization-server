@@ -9,7 +9,7 @@ create table auth_user (
    created_at timestamp with time zone,
    created_by_user_id uuid,
    last_modified_by_user_id uuid,
-   last_modified_date timestamp with time zone,
+   last_modified_at timestamp with time zone,
    constraint uq_auth_user_email unique (email),
    primary key (id)
 );
