@@ -1,4 +1,4 @@
-package com.rafaelsousa.algashop.authorization_server.infrastructure.security;
+package com.rafaelsousa.algashop.authorization_server.infrastructure.security.oidc;
 
 import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUser;
 import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUserRepository;

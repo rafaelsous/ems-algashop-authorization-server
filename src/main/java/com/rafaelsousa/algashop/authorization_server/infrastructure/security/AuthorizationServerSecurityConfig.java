@@ -1,5 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.infrastructure.security;
 
+import com.rafaelsousa.algashop.authorization_server.infrastructure.security.oidc.OidcUserInfoMapper;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.oidc.web.authentication.OidcLogoutAuthenticationSuccessHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -19,6 +21,7 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @RequiredArgsConstructor
 public class AuthorizationServerSecurityConfig {
     private final OidcUserInfoMapper userInfoMapper;
+    private final OidcLogoutAuthenticationSuccessHandler oidcLogoutAuthenticationSuccessHandler;
 
     @Bean
     @Order(1)
@@ -28,7 +31,9 @@ public class AuthorizationServerSecurityConfig {
 
         http.securityMatcher(authorizationServer.getEndpointsMatcher())
                 .with(authorizationServer, configurer -> configurer.oidc(
-                    oidc -> oidc.userInfoEndpoint(userInfo -> userInfo.userInfoMapper(userInfoMapper))
+                    oidc -> oidc
+                        .logoutEndpoint(logout -> logout.logoutResponseHandler(oidcLogoutAuthenticationSuccessHandler))
+                        .userInfoEndpoint(userInfo -> userInfo.userInfoMapper(userInfoMapper))
                 ))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
                 .exceptionHandling(
