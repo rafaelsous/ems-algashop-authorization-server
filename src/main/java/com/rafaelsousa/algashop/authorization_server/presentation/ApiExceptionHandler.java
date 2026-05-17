@@ -1,5 +1,7 @@
 package com.rafaelsousa.algashop.authorization_server.presentation;
 
+import com.rafaelsousa.algashop.authorization_server.application.user.management.AuthUserEmailAlreadyInUseException;
+import com.rafaelsousa.algashop.authorization_server.domain.model.DomainException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,11 +53,31 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
     }
 
+	@ExceptionHandler({DomainException.class})
+	public ProblemDetail handleUnprocessableEntityException(Exception ex) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
+		problemDetail.setTitle("Unprocessable entity");
+		problemDetail.setType(URI.create("/errors/unprocessable-entity"));
+		problemDetail.setProperty(TIMESTAMP_PROPERTY_NAME, OffsetDateTime.now());
+
+		return problemDetail;
+	}
+
 	@ExceptionHandler(AuthorizationDeniedException.class)
 	public ProblemDetail handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
 		problemDetail.setType(URI.create("/errors/forbidden"));
 		problemDetail.setTitle("Forbidden");
+		problemDetail.setProperty(TIMESTAMP_PROPERTY_NAME, OffsetDateTime.now());
+
+		return problemDetail;
+	}
+
+	@ExceptionHandler(AuthUserEmailAlreadyInUseException.class)
+	public ProblemDetail handleAuthUserEmailAlreadyInUseException(AuthUserEmailAlreadyInUseException ex) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+		problemDetail.setType(URI.create("/errors/conflic"));
+		problemDetail.setTitle("Conflict");
 		problemDetail.setProperty(TIMESTAMP_PROPERTY_NAME, OffsetDateTime.now());
 
 		return problemDetail;
