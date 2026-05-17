@@ -10,7 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.authorization.oidc.web.authentication.OidcLogoutAuthenticationSuccessHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -48,6 +51,21 @@ public class AuthorizationServerSecurityConfig {
 
     @Bean
     @Order(2)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
+        http.securityMatcher("/api/**")
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/actuator/health/**").permitAll()
+                .anyRequest().authenticated())
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(CorsConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
             .formLogin(Customizer.withDefaults());
