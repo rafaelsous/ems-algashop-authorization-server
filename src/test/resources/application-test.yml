@@ -1,0 +1,23 @@
+server.port: 8082
+
+spring:
+  application:
+    name: authorization_server
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authorization_server_test
+    username: postgres
+    password: postgres
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 10
+      connection-timeout: 3000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/clean
+    user: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/authorization_server_test

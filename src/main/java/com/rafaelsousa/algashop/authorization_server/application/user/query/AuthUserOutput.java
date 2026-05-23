@@ -1,7 +1,7 @@
 package com.rafaelsousa.algashop.authorization_server.application.user.query;
 
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUser;
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUserType;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUser;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

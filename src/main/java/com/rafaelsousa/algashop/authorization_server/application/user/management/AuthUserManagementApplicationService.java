@@ -1,8 +1,9 @@
 package com.rafaelsousa.algashop.authorization_server.application.user.management;
 
+import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserNotFoundException;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserOutput;
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUser;
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUserRepository;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUser;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -10,6 +11,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -35,5 +38,13 @@ public class AuthUserManagementApplicationService {
 		);
 
 		return AuthUserOutput.from(authUserRepository.save(user));
+	}
+
+	public void delete(UUID userId) {
+		AuthUser user = authUserRepository.findById(userId)
+			.orElseThrow(() -> new AuthUserNotFoundException(userId));
+
+		user.anonymize();
+		authUserRepository.save(user);
 	}
 }

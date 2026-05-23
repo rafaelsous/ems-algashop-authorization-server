@@ -1,4 +1,4 @@
-package com.rafaelsousa.algashop.authorization_server.domain.model;
+package com.rafaelsousa.algashop.authorization_server.domain.model.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.application.user.management;
 
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUserType;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

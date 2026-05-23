@@ -1,7 +1,7 @@
 package com.rafaelsousa.algashop.authorization_server.infrastructure.security.userinfo;
 
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUser;
-import com.rafaelsousa.algashop.authorization_server.domain.model.AuthUserRepository;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUser;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.User;

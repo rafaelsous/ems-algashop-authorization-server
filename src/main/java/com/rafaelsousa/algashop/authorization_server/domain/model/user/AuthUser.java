@@ -1,5 +1,8 @@
-package com.rafaelsousa.algashop.authorization_server.domain.model;
+package com.rafaelsousa.algashop.authorization_server.domain.model.user;
 
+import com.rafaelsousa.algashop.authorization_server.domain.model.AbstractAuditableAggregateRoot;
+import com.rafaelsousa.algashop.authorization_server.domain.model.DomainException;
+import com.rafaelsousa.algashop.authorization_server.domain.model.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -9,10 +12,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
+@Builder
 @Entity
 @Table(name = "auth_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser>{
+@AllArgsConstructor
+public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser> {
 
 	@Id
 	@EqualsAndHashCode.Include
@@ -70,6 +75,12 @@ public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser>{
 	private void setId(UUID id) {
 		Objects.requireNonNull(id);
 		this.id = id;
+	}
+
+	public void anonymize() {
+		this.setName("Anonymized User");
+		this.setEmail("anonymized-" + this.id + "@deleted.local");
+		this.setEnabled(false);
 	}
 
 	private void setEmail(String email) {
