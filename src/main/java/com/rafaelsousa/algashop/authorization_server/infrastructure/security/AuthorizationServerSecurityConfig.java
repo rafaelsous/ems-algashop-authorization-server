@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.authorization.oidc.web.authentication.OidcLogoutAuthenticationSuccessHandler;
@@ -35,18 +34,19 @@ public class AuthorizationServerSecurityConfig {
                 new OAuth2AuthorizationServerConfigurer();
 
         http.securityMatcher(authorizationServer.getEndpointsMatcher())
-                .with(authorizationServer, configurer -> configurer.oidc(
-                    oidc -> oidc
-                        .logoutEndpoint(logout -> logout.logoutResponseHandler(oidcLogoutAuthenticationSuccessHandler))
-                        .userInfoEndpoint(userInfo -> userInfo.userInfoMapper(userInfoMapper))
-                ))
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-                .exceptionHandling(
-                        exceptions -> exceptions.defaultAuthenticationEntryPointFor(
-                                        new LoginUrlAuthenticationEntryPoint("/login"),
-                                        new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-                        )
-                );
+            .cors(Customizer.withDefaults())
+            .with(authorizationServer, configurer -> configurer.oidc(
+                oidc -> oidc
+                    .logoutEndpoint(logout -> logout.logoutResponseHandler(oidcLogoutAuthenticationSuccessHandler))
+                    .userInfoEndpoint(userInfo -> userInfo.userInfoMapper(userInfoMapper))
+            ))
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+            .exceptionHandling(
+                    exceptions -> exceptions.defaultAuthenticationEntryPointFor(
+                                    new LoginUrlAuthenticationEntryPoint("/login"),
+                                    new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+                    )
+            );
 
         return http.build();
     }
@@ -59,7 +59,7 @@ public class AuthorizationServerSecurityConfig {
                 .requestMatchers("/actuator/health/**").permitAll()
                 .anyRequest().authenticated())
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(CorsConfigurer::disable)
+            .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
