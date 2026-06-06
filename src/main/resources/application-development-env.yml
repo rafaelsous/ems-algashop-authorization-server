@@ -88,6 +88,12 @@ spring:
                 - shopping-carts:read
                 - shopping-carts:write
                 - openid
+                - invoices:read
+                - invoices:write
+                - users:read
+                - users:write
+                - products:read
+                - products:write
             require-authorization-consent: true
             require-proof-key: false # PKCE
             token:

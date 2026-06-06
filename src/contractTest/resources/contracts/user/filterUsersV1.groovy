@@ -11,7 +11,7 @@ Contract.make {
         url("/api/v1/users") {
             queryParameters {
                 parameter("size", value(stub(optional(anyNumber())), test(10)))
-                parameter("number", value(stub(optional(anyNumber())), test(0)))
+                parameter("page", value(stub(optional(anyNumber())), test(0)))
             }
         }
         response {
@@ -21,7 +21,7 @@ Contract.make {
             }
             body([
                     size: fromRequest().query("size"),
-                    number: 0,
+                    page: 0,
                     totalElements: 2,
                     totalPages: 1,
                     content: [
