@@ -25,6 +25,7 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @RequiredArgsConstructor
 public class AuthorizationServerSecurityConfig {
     private final OidcUserInfoMapper userInfoMapper;
+    private final AlgaShopSecurityProperties algaShopSecurityProperties;
     private final OidcLogoutAuthenticationSuccessHandler oidcLogoutAuthenticationSuccessHandler;
 
     @Bean
@@ -35,6 +36,10 @@ public class AuthorizationServerSecurityConfig {
 
         http.securityMatcher(authorizationServer.getEndpointsMatcher())
             .cors(Customizer.withDefaults())
+            .headers(headers -> {
+                AlgaShopSecurityProperties.ContentSecurityPolicyProperties csp = algaShopSecurityProperties.getCsp();
+                headers.contentSecurityPolicy(c -> c.policyDirectives(csp.getPolicyDirectives()));
+            })
             .with(authorizationServer, configurer -> configurer.oidc(
                 oidc -> oidc
                     .logoutEndpoint(logout -> logout.logoutResponseHandler(oidcLogoutAuthenticationSuccessHandler))
