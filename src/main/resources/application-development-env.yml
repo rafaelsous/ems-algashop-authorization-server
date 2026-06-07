@@ -77,7 +77,7 @@ spring:
                 - http://algashop.local:9080/login/oauth2/code/algashop-ecommerce-web
                 - https://oauth.pstmn.io/v1/callback
               post-logout-redirect-uris:
-                - http://algashop.local:9080?logout-success=true
+                - http://algashop.local:9080?logout-success
               scopes:
                 - credit-cards:read
                 - credit-cards:write
