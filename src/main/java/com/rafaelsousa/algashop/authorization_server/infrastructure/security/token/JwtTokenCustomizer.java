@@ -2,36 +2,44 @@ package com.rafaelsousa.algashop.authorization_server.infrastructure.security.to
 
 import com.rafaelsousa.algashop.authorization_server.infrastructure.security.oidc.OidcUserInfoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
-public class OAuth2TokenCustomizerConfig {
+public class JwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
 	private final OidcUserInfoService oidcUserInfoService;
 
-	@Bean
-	public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
-		return context -> {
-			String tokenType = context.getTokenType().getValue();
-			AuthorizationGrantType authorizationGrantType = context.getAuthorizationGrantType();
+	@Override
+	public void customize(JwtEncodingContext context) {
+		String tokenType = context.getTokenType().getValue();
+		AuthorizationGrantType authorizationGrantType = context.getAuthorizationGrantType();
 
-			if (isIdToken(tokenType)) {
-				OidcUserInfo oidcUserInfo = loadOidcUserInfo(context);
-				context.getClaims().claims(claims -> claims.putAll(oidcUserInfo.getClaims()));
-			} else  if (isAccessToken(tokenType) &&
-					(isAuthCodeFlow(authorizationGrantType)
-					|| isRefreshTokenFlow(authorizationGrantType))) {
-					OidcUserInfo oidcUserInfo = loadOidcUserInfo(context);
-					context.getClaims().subject(oidcUserInfo.getSubject());
-			}
-		};
+		if (isIdToken(tokenType)) {
+			customizeIdToken(context);
+		} else  if (isAccessToken(tokenType) && isUserDelegatedFlow(authorizationGrantType)) {
+			customizeAccessToken(context);
+		}
+	}
+
+	private boolean isUserDelegatedFlow(AuthorizationGrantType authorizationGrantType) {
+		return isAuthCodeFlow(authorizationGrantType) || isRefreshTokenFlow(authorizationGrantType);
+	}
+
+	private void customizeAccessToken(JwtEncodingContext context) {
+		OidcUserInfo oidcUserInfo = loadOidcUserInfo(context);
+		context.getClaims().subject(oidcUserInfo.getSubject());
+		context.getClaims().claim("role",  oidcUserInfo.getClaims().get("type"));
+	}
+
+	private void customizeIdToken(JwtEncodingContext context) {
+		OidcUserInfo oidcUserInfo = loadOidcUserInfo(context);
+		context.getClaims().claims(claims -> claims.putAll(oidcUserInfo.getClaims()));
 	}
 
 	private boolean isRefreshTokenFlow(AuthorizationGrantType authorizationGrantType) {
