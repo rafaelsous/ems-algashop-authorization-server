@@ -1,9 +1,11 @@
 package com.rafaelsousa.algashop.authorization_server.infrastructure.security.check;
 
 import com.rafaelsousa.algashop.authorization_server.application.security.SecurityCheckApplicationService;
+import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -13,8 +15,10 @@ import java.util.UUID;
 @Slf4j
 @Service("securityCheck")
 public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckApplicationService {
+	private static final String SCOPE_USERS_WRITE = "SCOPE_users:write";
+	private static final String ROLE_MANAGER = "ROLE_" + AuthUserType.MANAGER.name();
 
-    @Override
+	@Override
     public UUID getAuthenticatedUserId() {
         if (isMachineAuthenticated()) {
             throw new AccessDeniedException("Machine users do not have user ID");
@@ -58,6 +62,39 @@ public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckA
     @Override
     public boolean canAccessOwnProfile() {
         return this.isAuthenticated() && !this.isMachineAuthenticated();
+    }
+
+    @Override
+    public boolean canRegisterUserOfType(AuthUserType registrationType) {
+		if (!isAuthenticated()) {
+			return false;
+		}
+
+        if (!hasAuthority(SCOPE_USERS_WRITE)) {
+			return false;
+        }
+
+		if (registrationType == AuthUserType.CUSTOMER) {
+			return isMachineAuthenticated();
+		}
+
+		if (hasAuthority(ROLE_MANAGER)) {
+			return registrationType == AuthUserType.MANAGER || registrationType.equals(AuthUserType.OPERATOR);
+		}
+
+        return false;
+    }
+
+    private boolean hasAuthority(String rawAuthority) {
+        Authentication authentication;
+	    try {
+		    authentication = getAuthentication();
+	    } catch (IllegalStateException ex) {
+            log.debug(ex.getMessage(), ex);
+		    return false;
+	    }
+
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority(rawAuthority));
     }
 
     private Authentication getAuthentication() {

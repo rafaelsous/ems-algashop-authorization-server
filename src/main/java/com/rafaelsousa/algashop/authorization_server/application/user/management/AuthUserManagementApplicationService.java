@@ -1,5 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.application.user.management;
 
+import com.rafaelsousa.algashop.authorization_server.application.security.SecurityCheckApplicationService;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserNotFoundException;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserOutput;
 import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUser;
@@ -8,6 +9,7 @@ import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserR
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +22,13 @@ import java.util.UUID;
 public class AuthUserManagementApplicationService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthUserRepository authUserRepository;
+	private final SecurityCheckApplicationService securityCheckApplicationService;
 
 	public AuthUserOutput create(AuthUserInput authUserInput) {
+		if (!securityCheckApplicationService.canRegisterUserOfType(authUserInput.getType())) {
+			throw new AccessDeniedException("Cannot register user of type " + authUserInput.getType());
+		}
+
 		if (authUserRepository.existsByEmail(authUserInput.getEmail())) {
 			throw new AuthUserEmailAlreadyInUseException("Email already exists");
 		}
