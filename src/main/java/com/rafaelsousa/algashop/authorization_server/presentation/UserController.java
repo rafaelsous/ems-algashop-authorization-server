@@ -1,5 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.presentation;
 
+import com.rafaelsousa.algashop.authorization_server.application.user.management.AuthUserUpdateInput;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserFilter;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserQueryService;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.PageModel;
@@ -28,7 +29,7 @@ public class UserController {
 	@CanWriteUsers
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public AuthUserOutput createUser(@Valid @RequestBody AuthUserInput authUserInput) {
+	public AuthUserOutput createUser(@RequestBody @Valid AuthUserInput authUserInput) {
 		return authUserManagementApplicationService.create(authUserInput);
 	}
 
@@ -42,6 +43,12 @@ public class UserController {
 	@GetMapping("/{userId}")
 	public AuthUserOutput getUser(@PathVariable UUID userId) {
 		return authUserQueryService.findById(userId);
+	}
+
+	@CanWriteUsers
+	@PutMapping("/{userId}")
+	public AuthUserOutput update(@PathVariable UUID userId, @RequestBody @Valid AuthUserUpdateInput authUserUpdateInput) {
+		return authUserManagementApplicationService.update(userId, authUserUpdateInput);
 	}
 
 	@CanWriteUsers

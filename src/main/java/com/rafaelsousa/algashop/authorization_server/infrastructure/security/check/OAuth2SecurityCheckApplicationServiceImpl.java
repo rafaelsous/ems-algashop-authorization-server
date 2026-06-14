@@ -85,6 +85,40 @@ public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckA
         return false;
     }
 
+	@Override
+	public boolean canEditUser(AuthUserType editType, UUID editUserId) {
+		if (isMachineAuthenticated()) {
+			return false;
+		}
+
+		try {
+			if (getAuthenticatedUserId().equals(editUserId)) return true;
+		} catch (AccessDeniedException _) {
+			return false;
+		}
+
+		if (hasAuthority(ROLE_MANAGER)) {
+			return editType == AuthUserType.MANAGER || editType.equals(AuthUserType.OPERATOR);
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean canChangeUserType(AuthUserType currentUserType, AuthUserType newUserType) {
+		if (currentUserType == newUserType) return true;
+
+		if (hasAuthority(ROLE_MANAGER)) {
+			if (currentUserType == AuthUserType.MANAGER && newUserType == AuthUserType.OPERATOR) {
+				return true;
+			}
+
+			return currentUserType == AuthUserType.OPERATOR && newUserType == AuthUserType.MANAGER;
+		}
+
+		return false;
+	}
+
     private boolean hasAuthority(String rawAuthority) {
         Authentication authentication;
 	    try {
