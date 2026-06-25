@@ -46,6 +46,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}")
 	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	runtimeOnly 'org.postgresql:postgresql'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
