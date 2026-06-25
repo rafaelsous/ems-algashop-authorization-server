@@ -21,6 +21,10 @@ import java.util.List;
 public class AlgaShopSecurityProperties {
 
 	@Valid
+	@NotBlank
+	private String defaultRedirectUri;
+
+	@Valid
 	@NotNull
 	private CorsProperties cors;
 

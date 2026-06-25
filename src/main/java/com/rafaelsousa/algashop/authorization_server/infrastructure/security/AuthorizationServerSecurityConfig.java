@@ -92,7 +92,9 @@ public class AuthorizationServerSecurityConfig {
                 .requestMatchers(LOGIN_URL, "/forgot-password", "/css/**", "/js/**", "/img/**", "/favicon.ico")
                     .permitAll()
                 .anyRequest().authenticated())
-            .formLogin(c -> c.loginPage(LOGIN_URL).permitAll());
+            .formLogin(c -> c.loginPage(LOGIN_URL)
+                .defaultSuccessUrl(algaShopSecurityProperties.getDefaultRedirectUri())
+                .permitAll());
 
         return http.build();
     }
