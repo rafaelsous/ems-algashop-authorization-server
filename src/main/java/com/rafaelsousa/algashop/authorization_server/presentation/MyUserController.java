@@ -1,6 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.presentation;
 
-import com.rafaelsousa.algashop.authorization_server.application.security.SecurityCheckApplicationService;
+import com.rafaelsousa.algashop.authorization_server.application.security.SecurityChecks;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserOutput;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserQueryService;
 import com.rafaelsousa.algashop.authorization_server.infrastructure.security.check.SecurityAnnotations.CanAccessOwnProfile;
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MyUserController {
 	private final AuthUserQueryService authUserQueryService;
-	private final SecurityCheckApplicationService securityCheck;
+	private final SecurityChecks securityChecks;
 
 	@GetMapping
 	@CanAccessOwnProfile
 	public AuthUserOutput getMe() {
-		return authUserQueryService.findById(securityCheck.getAuthenticatedUserId());
+		return authUserQueryService.findById(securityChecks.getAuthenticatedUserId());
 	}
 }

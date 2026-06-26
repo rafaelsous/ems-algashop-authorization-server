@@ -1,6 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.application.user.management;
 
-import com.rafaelsousa.algashop.authorization_server.application.security.SecurityCheckApplicationService;
+import com.rafaelsousa.algashop.authorization_server.application.security.SecurityChecks;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserNotFoundException;
 import com.rafaelsousa.algashop.authorization_server.application.user.query.AuthUserOutput;
 import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUser;
@@ -22,10 +22,10 @@ import java.util.UUID;
 public class AuthUserManagementApplicationService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthUserRepository authUserRepository;
-	private final SecurityCheckApplicationService securityCheckApplicationService;
+	private final SecurityChecks securityChecks;
 
 	public AuthUserOutput create(AuthUserInput authUserInput) {
-		if (!securityCheckApplicationService.canRegisterUserOfType(authUserInput.getType())) {
+		if (!securityChecks.canRegisterUserOfType(authUserInput.getType())) {
 			throw new AccessDeniedException("Cannot register user of type " + authUserInput.getType());
 		}
 
@@ -68,11 +68,11 @@ public class AuthUserManagementApplicationService {
 	}
 
 	private void verifyCanEditUser(AuthUser authUser, AuthUserUpdateInput authUserUpdateInput) {
-		if (!securityCheckApplicationService.canEditUser(authUser.getType(), authUser.getId())) {
+		if (!securityChecks.canEditUser(authUser.getType(), authUser.getId())) {
 			throw new AccessDeniedException("Cannot edit user of type " + authUser.getType());
 		}
 
-		if (!securityCheckApplicationService.canChangeUserType(authUser.getType(), authUserUpdateInput.getType())) {
+		if (!securityChecks.canChangeUserType(authUser.getType(), authUserUpdateInput.getType())) {
 			throw new AccessDeniedException("Cannot change user type to " + authUserUpdateInput.getType());
 		}
 	}

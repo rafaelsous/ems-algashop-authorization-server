@@ -1,6 +1,6 @@
 package com.rafaelsousa.algashop.authorization_server.infrastructure.persistence;
 
-import com.rafaelsousa.algashop.authorization_server.application.security.SecurityCheckApplicationService;
+import com.rafaelsousa.algashop.authorization_server.application.security.SecurityChecks;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.auditing.DateTimeProvider;
@@ -25,13 +25,13 @@ public class SpringDataAuditingConfig {
     }
 
     @Bean
-    public AuditorAware<UUID> auditorProvider(SecurityCheckApplicationService securityCheckApplicationService) {
+    public AuditorAware<UUID> auditorProvider(SecurityChecks securityChecks) {
         return () -> {
-            if (!securityCheckApplicationService.isAuthenticated() || securityCheckApplicationService.isMachineAuthenticated()) {
+            if (!securityChecks.isAuthenticated() || securityChecks.isMachineAuthenticated()) {
                 return Optional.empty();
             }
 
-            return Optional.of(securityCheckApplicationService.getAuthenticatedUserId());
+            return Optional.of(securityChecks.getAuthenticatedUserId());
         };
     }
 }

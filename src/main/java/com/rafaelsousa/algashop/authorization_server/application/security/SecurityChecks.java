@@ -4,7 +4,7 @@ import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserT
 
 import java.util.UUID;
 
-public interface SecurityCheckApplicationService {
+public interface SecurityChecks {
 	UUID getAuthenticatedUserId();
 	boolean isAuthenticated();
 	boolean isMachineAuthenticated();

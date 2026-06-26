@@ -21,6 +21,6 @@ public class SecurityAnnotations {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE})
-    @PreAuthorize("@securityCheck.canAccessOwnProfile()")
+    @PreAuthorize("@securityChecks.canAccessOwnProfile()")
     public @interface CanAccessOwnProfile {}
 }
