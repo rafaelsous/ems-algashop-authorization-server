@@ -91,6 +91,20 @@ public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser> {
 		return plainToken;
 	}
 
+    public void changePasswordWithToken(
+            String plainToken,
+            String plainPassword,
+            AuthUserPasswordManager passwordManager,
+            VerificationTokenHasher tokenHasher) {
+		verifyToken(plainToken, tokenHasher);
+		setPassword(passwordManager.encrypt(plainPassword));
+		cleanVerificationToken();
+
+		if (!isEmailVerified()) {
+			setEmailVerified(true);
+		}
+    }
+
 	public boolean isDisabled() {
 		return !isEmailVerified() || !isEnabled();
 	}
@@ -113,6 +127,33 @@ public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser> {
 
 	private void setEmailVerified(boolean emailVerified) {
 		this.emailVerified = emailVerified;
+	}
+
+	private void verifyToken(String plainToken, VerificationTokenHasher tokenHasher) {
+		if (StringUtils.isBlank(plainToken)) {
+			throw new IllegalArgumentException("Token cannot be blank");
+		}
+
+		if (StringUtils.isBlank(this.verificationToken)) {
+			throw new DomainException("No verification token set for this user");
+		}
+
+		if (isTokenExpired()) {
+			throw new IllegalArgumentException("Verification token has expired");
+		}
+
+		if (!tokenHasher.isEqual(this.verificationToken, plainToken)) {
+            throw new IllegalArgumentException("Invalid verification token");
+		}
+	}
+
+	private boolean isTokenExpired() {
+		return this.verificationTokenExpirationDate == null || OffsetDateTime.now(ZoneId.systemDefault()).isAfter(this.verificationTokenExpirationDate);
+	}
+
+	private void cleanVerificationToken() {
+		this.verificationToken = null;
+		this.verificationTokenExpirationDate = null;
 	}
 
 	@Override
