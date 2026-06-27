@@ -8,6 +8,9 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,19 +32,24 @@ public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser> {
 
 	@Setter
 	private boolean enabled;
+	private boolean emailVerified;
+
+	private String verificationToken;
+	private OffsetDateTime verificationTokenExpirationDate;
 
 	@Enumerated(EnumType.STRING)
 	private AuthUserType type;
 
-	public static AuthUser brandNew(String name, String email, AuthUserType type, String passwordHash) {
+	public static AuthUser brandNew(String name, String email, AuthUserType type, AuthUserPasswordManager passwordManager) {
 		AuthUser user = new AuthUser();
 
 		user.setId(IdGenerator.generateTimeBasedUUID());
 		user.setName(name);
 		user.setEmail(email);
 		user.setType(type);
-		user.setPassword(passwordHash);
+        user.setPassword(passwordManager.encrypt(passwordManager.generates()));
 		user.setEnabled(true);
+		user.setEmailVerified(false);
 
 		return user;
 	}
@@ -52,14 +60,6 @@ public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser> {
         }
 
 		this.name = name;
-	}
-
-	public void setPassword(String password) {
-		if (StringUtils.isBlank(name)) {
-			throw new IllegalArgumentException();
-		}
-
-		this.password = password;
 	}
 
 	public void setType(AuthUserType type) {
@@ -83,12 +83,36 @@ public class AuthUser extends AbstractAuditableAggregateRoot<AuthUser> {
 		this.setEnabled(false);
 	}
 
+	public String generateVerificationToken(Duration expiresIn, VerificationTokenHasher hasher) {
+		String plainToken = hasher.generates();
+		this.verificationToken = hasher.hash(plainToken);
+		this.verificationTokenExpirationDate = OffsetDateTime.now(ZoneId.systemDefault()).plus(expiresIn);
+
+		return plainToken;
+	}
+
+	public boolean isDisabled() {
+		return !isEmailVerified() || !isEnabled();
+	}
+
 	private void setEmail(String email) {
-		if (StringUtils.isBlank(name)) {
+		if (StringUtils.isBlank(email)) {
 			throw new IllegalArgumentException();
 		}
 
 		this.email = email;
+	}
+
+	private void setPassword(String password) {
+		if (StringUtils.isBlank(password)) {
+			throw new IllegalArgumentException();
+		}
+
+		this.password = password;
+	}
+
+	private void setEmailVerified(boolean emailVerified) {
+		this.emailVerified = emailVerified;
 	}
 
 	@Override

@@ -149,6 +149,10 @@ spring:
     timeout: 30m
 
 algashop:
+  user-account:
+    token:
+      activation-ttl: PT24H
+      password-reset-ttl: PT2H
   security:
     defaultRedirectUri: http://localhost:9080
     cors:
