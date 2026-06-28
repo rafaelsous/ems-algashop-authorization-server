@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -23,6 +24,7 @@ public class AuthUserMailSenderImpl implements AuthUserMailSender {
     private final JavaMailSender javaMailSender;
     private final UserAccountProperties userAccountProperties;
 
+    @Async
     @Override
     public void sendActivationEmail(AuthUser user, String activationToken) {
         String subject = "AlgaShop - Active your account";
@@ -47,6 +49,7 @@ public class AuthUserMailSenderImpl implements AuthUserMailSender {
         send(user.getEmail(), subject, body);
     }
 
+    @Async
     @Override
     public void sendPasswordChangeEmail(AuthUser user, String activationToken) {
         String subject = "AlgaShop - Change your password";
