@@ -1,4 +1,7 @@
 spring:
+  mail:
+    host: localhost
+    port: 1025
   datasource:
     url: jdbc:postgresql://localhost:5432/authorization_server
     username: postgres
@@ -153,6 +156,9 @@ algashop:
     token:
       activation-ttl: PT24H
       password-reset-ttl: PT2H
+    mail:
+      from: AlgaShop <no-reply@algashop.com>
+      password-change-url: http://auth.algashop.local:8081/change-password
   security:
     defaultRedirectUri: http://localhost:9080
     cors:
