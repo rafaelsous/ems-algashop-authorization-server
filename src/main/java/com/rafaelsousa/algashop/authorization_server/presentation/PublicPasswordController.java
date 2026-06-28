@@ -8,32 +8,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/change-password")
 @RequiredArgsConstructor
 public class PublicPasswordController {
     public static final String MESSAGE_ATTRIBUTE = "message";
     public static final String SUCCESS_ATTRIBUTE = "success";
+    public static final String PASSWORD_MESSAGE_TEMPLATE = "password-message";
 
     private final PasswordManagementApplicationService passwordManagementService;
 
-    @GetMapping
+    @GetMapping("/change-password")
     public String passwordForm(
             @RequestParam(name = "token", required = false) String token, Model model) {
         if (token == null || token.isBlank()) {
             model.addAttribute(MESSAGE_ATTRIBUTE, "Invalid token.");
             model.addAttribute(SUCCESS_ATTRIBUTE, false);
-            return "password-message";
+            return PASSWORD_MESSAGE_TEMPLATE;
         }
 
         model.addAttribute("token", token);
         return "password-form";
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path = "/change-password", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String changePassword(
             @RequestParam("token") String token,
             @RequestParam("newPassword") String newPassword,
@@ -47,6 +46,17 @@ public class PublicPasswordController {
             model.addAttribute(SUCCESS_ATTRIBUTE, false);
         }
 
-        return "password-message";
+        return PASSWORD_MESSAGE_TEMPLATE;
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPasswordProcessing(@RequestParam("email") String email) {
+        passwordManagementService.requestPasswordChange(email);
+        return "forgot-password-message";
     }
 }
