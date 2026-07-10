@@ -11,16 +11,21 @@ public class SecurityAnnotations {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE})
-    @PreAuthorize("hasAuthority('SCOPE_users:read')")
+    @PreAuthorize("hasAuthority('SCOPE_users:read') and not hasRole('CUSTOMER')")
     public @interface CanReadUsers {}
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE})
-    @PreAuthorize("hasAuthority('SCOPE_users:write')")
+    @PreAuthorize("hasAuthority('SCOPE_users:write') and not hasRole('CUSTOMER')")
     public @interface CanWriteUsers {}
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE})
     @PreAuthorize("@securityChecks.canAccessOwnProfile()")
     public @interface CanAccessOwnProfile {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD, ElementType.TYPE})
+    @PreAuthorize("@securityChecks.canAccessOwnProfile() and hasRole('CUSTOMER')")
+    public @interface CanAnonymizeOwnProfile {}
 }

@@ -21,3 +21,23 @@ spring:
     user: postgres
     password: postgres
     url: jdbc:postgresql://localhost:5432/authorization_server_test
+
+algashop:
+  user-account:
+    token:
+      activation-ttl: PT24H
+      password-reset-ttl: PT2H
+    mail:
+      from: AlgaShop <no-reply@algashop.com>
+      password-change-url: http://auth.algashop.local:8081/change-password
+  security:
+    defaultRedirectUri: http://localhost:9080
+    cors:
+      allowedOrigins:
+        - http://admin.algashop.local:4200
+    cookie:
+      secure: false # HTTPS
+      sameSite: Lax # None, Lax, Strict
+      domainName: algashop.local
+    csp:
+      policyDirectives: frame-ancestors 'self' http://admin.algashop.local:4200 http://auth.algashop.local:8081
