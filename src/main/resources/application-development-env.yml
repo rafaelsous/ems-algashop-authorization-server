@@ -2,6 +2,7 @@ spring:
   config:
     import:
       - aws-secretsmanager:/secret/algashop/authorization-server/database?prefix=auth.secrets.datasource.
+      - aws-parameterstore:/config/algashop/authorization-server?prefix=auth.params
   cloud:
     aws:
       region:
@@ -11,7 +12,7 @@ spring:
     host: localhost
     port: 1025
   datasource:
-    url: jdbc:postgresql://localhost:5432/authorization_server
+    url: ${auth.params.datasource.url}
     username: ${auth.secrets.datasource.username}
     password: ${auth.secrets.datasource.password}
 
@@ -21,14 +22,14 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration,classpath:db/testdata
-    user: postgres
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/authorization_server
+    user: ${auth.secrets.datasource.username}
+    password: ${auth.secrets.datasource.password}
+    url: ${auth.params.datasource.url}
 
   security:
     oauth2:
       authorizationserver:
-        issuer: http://auth.algashop.local:8081
+        issuer: ${auth.params.issuer}
         client:
           algashop-test-client:
             registration:
@@ -37,7 +38,7 @@ spring:
                 - client_credentials
               client-authentication-methods:
                 - client_secret_basic
-              client-secret: "{noop}testing123"
+              client-secret: ${auth.params.clients.algashop-test.secret}
               scopes:
                 - products:read
                 - products:write
