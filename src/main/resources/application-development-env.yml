@@ -7,6 +7,9 @@ spring:
       - aws-parameterstore:/config/algashop/shared?prefix=shared.params
   cloud:
     aws:
+      credentials:
+        access-key: test
+        secret-key: test
       region:
         static: us-east-1
       endpoint: http://algashop-localstack:4566
@@ -178,8 +181,10 @@ algashop:
     csp:
       policyDirectives: ${auth.params.security.csp.policyDirectives}
 
-#logging:
-#  level:
+logging:
+  level:
+    software.amazon.awssdk: DEBUG
+    io.awspring.cloud: DEBUG
 #    org.springframework.security: ${auth.params.logging.security-level}
 
 management:
@@ -198,7 +203,7 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://service-registry:8761/eureka/
+      defaultZone: ${shared.params.service-registry-url}/eureka
     healthcheck:
       enabled: true
   instance:

@@ -2,8 +2,6 @@ spring:
   datasource:
     url: jdbc:postgresql://algashop-postgres:5432/authorization_server
   jpa:
-    hibernate:
-      ddl-auto: none
     show-sql: true
   flyway:
     enabled: true
