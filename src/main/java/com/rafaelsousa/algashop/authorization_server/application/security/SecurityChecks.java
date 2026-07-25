@@ -5,11 +5,19 @@ import com.rafaelsousa.algashop.authorization_server.domain.model.user.AuthUserT
 import java.util.UUID;
 
 public interface SecurityChecks {
-	UUID getAuthenticatedUserId();
-	boolean isAuthenticated();
-	boolean isMachineAuthenticated();
-	boolean canAccessOwnProfile();
-	boolean canRegisterUserOfType(AuthUserType registrationType);
-	boolean canEditUser(AuthUserType editType, UUID editUserId);
-	boolean canChangeUserType(AuthUserType currentUserType, AuthUserType newUserType);
+    UUID getAuthenticatedUserId();
+
+    boolean isAuthenticated();
+
+    boolean isMachineAuthenticated();
+
+    boolean canAccessOwnProfile();
+
+    boolean canRegisterUserOfType(AuthUserType registrationType);
+
+    boolean canEditUser(AuthUserType editType, UUID editUserId);
+
+    boolean canViewUser(AuthUserType viewType, UUID viewUserId);
+
+    boolean canChangeUserType(AuthUserType currentUserType, AuthUserType newUserType);
 }

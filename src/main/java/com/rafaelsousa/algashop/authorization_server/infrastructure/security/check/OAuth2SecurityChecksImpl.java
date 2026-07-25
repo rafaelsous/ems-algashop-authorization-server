@@ -15,10 +15,10 @@ import java.util.UUID;
 @Slf4j
 @Service("securityChecks")
 public class OAuth2SecurityChecksImpl implements SecurityChecks {
-	private static final String SCOPE_USERS_WRITE = "SCOPE_users:write";
-	private static final String ROLE_MANAGER = "ROLE_" + AuthUserType.MANAGER.name();
+    private static final String SCOPE_USERS_WRITE = "SCOPE_users:write";
+    private static final String ROLE_MANAGER = "ROLE_" + AuthUserType.MANAGER.name();
 
-	@Override
+    @Override
     public UUID getAuthenticatedUserId() {
         if (isMachineAuthenticated()) {
             throw new AccessDeniedException("Machine users do not have user ID");
@@ -26,23 +26,22 @@ public class OAuth2SecurityChecksImpl implements SecurityChecks {
 
         Jwt jwt = getJwt();
 
-
-	    try {
-		    return UUID.fromString(jwt.getSubject());
-	    } catch (IllegalArgumentException ex) {
+        try {
+            return UUID.fromString(jwt.getSubject());
+        } catch (IllegalArgumentException ex) {
             log.error("Invalid user ID in JWT subject: {}", jwt.getSubject(), ex);
             throw new AccessDeniedException("Invalid user ID in JWT subject");
-	    }
+        }
     }
 
     @Override
     public boolean isAuthenticated() {
-	    try {
-		    return getAuthentication().isAuthenticated();
-	    } catch (IllegalStateException ex) {
+        try {
+            return getAuthentication().isAuthenticated();
+        } catch (IllegalStateException ex) {
             log.debug(ex.getMessage(), ex);
-		    return false;
-	    }
+            return false;
+        }
     }
 
     @Override
@@ -50,7 +49,7 @@ public class OAuth2SecurityChecksImpl implements SecurityChecks {
         Jwt jwt;
 
         try {
-		    jwt = getJwt();
+            jwt = getJwt();
         } catch (IllegalStateException ex) {
             log.debug(ex.getMessage(), ex);
             return false;
@@ -66,67 +65,73 @@ public class OAuth2SecurityChecksImpl implements SecurityChecks {
 
     @Override
     public boolean canRegisterUserOfType(AuthUserType registrationType) {
-		if (!isAuthenticated()) {
-			return false;
-		}
-
-        if (!hasAuthority(SCOPE_USERS_WRITE)) {
-			return false;
+        if (!isAuthenticated()) {
+            return false;
         }
 
-		if (registrationType == AuthUserType.CUSTOMER) {
-			return isMachineAuthenticated();
-		}
+        if (!hasAuthority(SCOPE_USERS_WRITE)) {
+            return false;
+        }
 
-		if (hasAuthority(ROLE_MANAGER)) {
-			return registrationType == AuthUserType.MANAGER || registrationType.equals(AuthUserType.OPERATOR);
-		}
+        if (registrationType == AuthUserType.CUSTOMER) {
+            return isMachineAuthenticated();
+        }
+
+        if (hasAuthority(ROLE_MANAGER)) {
+            return registrationType == AuthUserType.MANAGER
+                    || registrationType.equals(AuthUserType.OPERATOR);
+        }
 
         return false;
     }
 
-	@Override
-	public boolean canEditUser(AuthUserType editType, UUID editUserId) {
-		if (isMachineAuthenticated()) {
-			return false;
-		}
+    @Override
+    public boolean canEditUser(AuthUserType editType, UUID editUserId) {
+        if (isMachineAuthenticated()) {
+            return false;
+        }
 
-		try {
-			if (getAuthenticatedUserId().equals(editUserId)) return true;
-		} catch (AccessDeniedException _) {
-			return false;
-		}
+        try {
+            if (getAuthenticatedUserId().equals(editUserId)) return true;
+        } catch (AccessDeniedException _) {
+            return false;
+        }
 
-		if (hasAuthority(ROLE_MANAGER)) {
-			return editType == AuthUserType.MANAGER || editType.equals(AuthUserType.OPERATOR);
-		}
+        if (hasAuthority(ROLE_MANAGER)) {
+            return editType == AuthUserType.MANAGER || editType.equals(AuthUserType.OPERATOR);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean canChangeUserType(AuthUserType currentUserType, AuthUserType newUserType) {
-		if (currentUserType == newUserType) return true;
+    @Override
+    public boolean canChangeUserType(AuthUserType currentUserType, AuthUserType newUserType) {
+        if (currentUserType == newUserType) return true;
 
-		if (hasAuthority(ROLE_MANAGER)) {
-			if (currentUserType == AuthUserType.MANAGER && newUserType == AuthUserType.OPERATOR) {
-				return true;
-			}
+        if (hasAuthority(ROLE_MANAGER)) {
+            if (currentUserType == AuthUserType.MANAGER && newUserType == AuthUserType.OPERATOR) {
+                return true;
+            }
 
-			return currentUserType == AuthUserType.OPERATOR && newUserType == AuthUserType.MANAGER;
-		}
+            return currentUserType == AuthUserType.OPERATOR && newUserType == AuthUserType.MANAGER;
+        }
 
-		return false;
-	}
+        return false;
+    }
+
+    @Override
+    public boolean canViewUser(AuthUserType viewType, UUID viewUserId) {
+        return canEditUser(viewType, viewUserId);
+    }
 
     private boolean hasAuthority(String rawAuthority) {
         Authentication authentication;
-	    try {
-		    authentication = getAuthentication();
-	    } catch (IllegalStateException ex) {
+        try {
+            authentication = getAuthentication();
+        } catch (IllegalStateException ex) {
             log.debug(ex.getMessage(), ex);
-		    return false;
-	    }
+            return false;
+        }
 
         return authentication.getAuthorities().contains(new SimpleGrantedAuthority(rawAuthority));
     }
