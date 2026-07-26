@@ -12,7 +12,7 @@ public class CookieConfig {
 	@Bean
 	public CookieSerializer cookieSerializer(AlgaShopSecurityProperties properties) {
 		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-		serializer.setCookieName("JSESSIONID");
+		serializer.setCookieName("AUTH_SESSION");
 		serializer.setCookiePath("/");
 		serializer.setUseHttpOnlyCookie(true);
 
