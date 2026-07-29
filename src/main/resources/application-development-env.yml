@@ -18,7 +18,7 @@ spring:
     port: ${auth.params.mail.port}
   session:
     store-type: jdbc
-    timeout: 30m
+#    timeout: 30m
   datasource:
     url: ${auth.params.datasource.url}
     username: ${auth.secrets.datasource.username}

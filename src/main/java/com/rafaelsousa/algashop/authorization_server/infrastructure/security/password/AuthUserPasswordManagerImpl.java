@@ -13,7 +13,7 @@ public class AuthUserPasswordManagerImpl implements AuthUserPasswordManager {
 
 	@Override
     public String generates() {
-        return RandomStringUtils.secure().nextAlphanumeric(12);
+        return RandomStringUtils.secure().next(12);
     }
 
     @Override
