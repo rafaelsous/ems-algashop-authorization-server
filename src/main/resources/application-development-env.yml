@@ -93,10 +93,8 @@ spring:
                 - refresh_token
               client-authentication-methods:
                 - client_secret_basic
-              redirect-uris:
-                -  ${auth.params.clients.algashop-ecommerce-web.redirect-uris}
-              post-logout-redirect-uris:
-                -  ${auth.params.clients.algashop-ecommerce-web.post-logout-redirect-uris}
+              redirect-uris: ${auth.params.clients.algashop-ecommerce-web.redirect-uris}
+              post-logout-redirect-uris: ${auth.params.clients.algashop-ecommerce-web.post-logout-redirect-uris}
               scopes:
                 - credit-cards:read
                 - credit-cards:write
@@ -143,10 +141,8 @@ spring:
                 - authorization_code
               client-authentication-methods:
                 - none # Client público sem autenticação
-              redirect-uris:
-                - ${auth.params.clients.algashop-admin-web.redirect-uris}
-              post-logout-redirect-uris:
-                - ${auth.params.clients.algashop-admin-web.post-logout-redirect-uris}
+              redirect-uris: ${auth.params.clients.algashop-admin-web.redirect-uris}
+              post-logout-redirect-uris: ${auth.params.clients.algashop-admin-web.post-logout-redirect-uris}
               scopes:
                 - products:read
                 - products:write
