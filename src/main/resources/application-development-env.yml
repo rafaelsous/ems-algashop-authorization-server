@@ -66,6 +66,10 @@ spring:
                 - shipping-costs:preview
                 - users:read
                 - users:write
+                - emails:send
+                - email-templates:read
+                - email-templates:write
+                - metrics:read
             token:
               access-token-time-to-live: 15m
 
@@ -155,6 +159,7 @@ spring:
                 - shopping-carts:read
                 - users:read
                 - users:write
+                - metrics:read
                 - openid
             require-authorization-consent: false
             require-proof-key: true #PKCE
